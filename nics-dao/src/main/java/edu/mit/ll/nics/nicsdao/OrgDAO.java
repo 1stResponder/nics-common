@@ -29,7 +29,9 @@
  */
 package edu.mit.ll.nics.nicsdao;
 
+import edu.mit.ll.nics.common.entity.Cap;
 import edu.mit.ll.nics.common.entity.Org;
+import edu.mit.ll.nics.common.entity.OrgCap;
 import edu.mit.ll.nics.common.entity.OrgType;
 
 import java.util.List;
@@ -50,4 +52,8 @@ public interface OrgDAO extends BaseDAO {
     public String getOrgNameByAgency(String agency);
     public Org getLoggedInOrg(int userid);
     public String getDistributionList(int incidentid);
+    public List<OrgCap> getOrgCaps(int orgId);
+    public List<Cap> getCaps();
+    public OrgCap updateOrgCaps(int orgCapId, String activeWeb, String activeMobile);
+    public List<String> getOrgDatalayerIds(int orgid);
 }

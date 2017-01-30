@@ -29,10 +29,12 @@
  */
 package edu.mit.ll.nics.nicsdao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import edu.mit.ll.nics.common.entity.datalayer.Datalayer;
+import edu.mit.ll.nics.common.entity.datalayer.DatalayerCollabroom;
 import edu.mit.ll.nics.common.entity.datalayer.Datalayerfolder;
 import edu.mit.ll.nics.common.entity.datalayer.Datasource;
 
@@ -58,6 +60,12 @@ public interface DatalayerDAO extends BaseDAO {
 	public void decrementIndexes(String parentFolderId, int index);
 	public void incrementIndexes(String parentFolderId, int index);
 	public int getNextDatalayerFolderIndex(String folderid);
+	public String insertDatalayerOrg(String datalayerid, int orgid);
 	public List<Map<String, Object>> getAuthentication(String datasourceid);
 	public List<Map<String,Object>> getTrackingLayers(int workspaceId, boolean secured);
+	public List<Datalayer> getCollabRoomDatalayers(int collabRoomId);
+	public DatalayerCollabroom insertCollabRoomDatalayer(int collabRoomId, String dataLayerId, int userid);
+	public boolean deleteCollabRoomDatalayers(ArrayList<DatalayerCollabroom> collabroomDataLayerIds);
+	public int insertImageFeature(String id, String location, String filename);
+	public int removeImageFeatures(String id);
 }

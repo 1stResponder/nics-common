@@ -70,7 +70,11 @@ public class GeoServer extends SuperGeoServer {
      * @return string of layer object in contentType
      */
     public String getLayer(String layerName, String contentType) {
-        return restGet("/layers/" + layerName, contentType);
+
+        String result = restGet("/layers/" + layerName, contentType);
+        log.warning("Result: " + result);
+
+        return result;
     }
 
     /**
@@ -339,6 +343,8 @@ public class GeoServer extends SuperGeoServer {
                 + "<maxFeatures>0</maxFeatures>"
                 + "<numDecimals>0</numDecimals>"
                 + "</featureType>";
+
+        log.warning(xml);
         return xml;
     }
 

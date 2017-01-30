@@ -90,6 +90,7 @@ public final class QueryBuilder{
 	
 	//Special Geometry insertion
 	public static String GEOMETRY = "geometry";
+	public static final String LOCATION = "location";
 	public static String SRS = "srs";
 	public static String TRANS = "trans";
 	public static String GEOMETRY_FUNCTION = "ST_GeomFromText";

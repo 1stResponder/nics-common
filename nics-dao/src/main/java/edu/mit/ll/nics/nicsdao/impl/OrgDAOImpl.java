@@ -31,6 +31,7 @@ package edu.mit.ll.nics.nicsdao.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,13 +46,19 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import edu.mit.ll.dao.QueryModel;
 import edu.mit.ll.jdbc.JoinRowCallbackHandler;
 import edu.mit.ll.jdbc.JoinRowMapper;
+import edu.mit.ll.nics.common.entity.Cap;
 import edu.mit.ll.nics.common.entity.Org;
+import edu.mit.ll.nics.common.entity.OrgCap;
 import edu.mit.ll.nics.common.entity.OrgOrgType;
 import edu.mit.ll.nics.common.entity.OrgType;
 import edu.mit.ll.nics.common.constants.SADisplayConstants;
 import edu.mit.ll.nics.nicsdao.GenericDAO;
 import edu.mit.ll.nics.nicsdao.OrgDAO;
 import edu.mit.ll.nics.nicsdao.QueryManager;
+import edu.mit.ll.nics.nicsdao.mappers.CapRowMapper;
+import edu.mit.ll.nics.nicsdao.mappers.IncidentTypeRowMapper;
+import edu.mit.ll.nics.nicsdao.mappers.Incident_IncidentTypeRowMapper;
+import edu.mit.ll.nics.nicsdao.mappers.OrgCapRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.OrgOrgTypeRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.OrgRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.OrgTypeRowMapper;
@@ -187,8 +194,6 @@ public class OrgDAOImpl extends GenericDAO implements OrgDAO {
     			.and().equals(SADisplayConstants.WORKSPACE_ID)
     			.and().inAsSQL(SADisplayConstants.SYSTEM_ROLE_ID, roles)
     			.orderBy(SADisplayConstants.ORG_NAME);
-    	
-    	System.out.println("ADMIN ORGS: " + queryModel.toString());
     	
     	JoinRowCallbackHandler<Org> handler = getHandlerWith(new UserOrgRowMapper(),new OrgOrgTypeRowMapper());
         template.query(queryModel.toString(), 
@@ -489,7 +494,134 @@ public class OrgDAOImpl extends GenericDAO implements OrgDAO {
     		throw new Exception("Unhandled exception while persisting Org entity:", e);
     	}
 	}
-    
+	
+	public List<OrgCap> getOrgCaps(int orgId){
+	
+		QueryModel query = QueryManager.createQuery(SADisplayConstants.ORG_CAP_TABLE).selectAllFromTable()
+				.left().join(SADisplayConstants.CAP_TABLE).using(SADisplayConstants.CAP_ID)
+				.where().equals(SADisplayConstants.ORG_ID);
+		
+		JoinRowCallbackHandler<OrgCap> handler = getOrgCapHandlerWith(new CapRowMapper());
+		
+		try{
+			this.template.query(query.toString(), new MapSqlParameterSource(SADisplayConstants.ORG_ID,orgId), handler);
+			
+			return handler.getResults();
+		}catch(Exception e){
+			log.info("No orgcaps found for org id #0", orgId);
+		}
+		
+		return null;
+		
+	}
+	
+	 public OrgCap updateOrgCaps(int orgCapId, String activeWeb, String activeMobile){
+		 
+		 QueryModel query;
+		 int result = -1;
+		 
+		 if(activeWeb != null && activeMobile == null){
+			 query = QueryManager.createQuery(SADisplayConstants.ORG_CAP_TABLE).update()
+				 .equals(SADisplayConstants.ACTIVE_WEB,Boolean.parseBoolean(activeWeb)).comma()
+				 .equals(SADisplayConstants.LAST_UPDATE,new Date())
+				 .where().equals(SADisplayConstants.ORG_CAP_ID,orgCapId);
+		 }
+		 else if(activeWeb == null && activeMobile != null){
+			 query = QueryManager.createQuery(SADisplayConstants.ORG_CAP_TABLE).update()
+				 .equals(SADisplayConstants.ACTIVE_MOBILE,Boolean.parseBoolean(activeMobile)).comma()
+				 .equals(SADisplayConstants.LAST_UPDATE,new Date())
+				 .where().equals(SADisplayConstants.ORG_CAP_ID,orgCapId);
+		 }
+		 else{
+			 query = QueryManager.createQuery(SADisplayConstants.ORG_CAP_TABLE).update()
+				 .equals(SADisplayConstants.ACTIVE_WEB,Boolean.parseBoolean(activeWeb)).comma()
+				 .equals(SADisplayConstants.ACTIVE_MOBILE,Boolean.parseBoolean(activeMobile)).comma()
+				 .equals(SADisplayConstants.LAST_UPDATE,new Date())
+				 .where().equals(SADisplayConstants.ORG_CAP_ID,orgCapId);
+		 }
+    	 
+		try {
+    				
+    		if(activeWeb != null && activeMobile == null){
+    			result	= this.template.update(query.toString(), 
+        			new MapSqlParameterSource(SADisplayConstants.ORG_CAP_ID,orgCapId)
+        			.addValue(SADisplayConstants.ACTIVE_WEB,Boolean.parseBoolean(activeWeb))
+        			.addValue(SADisplayConstants.LAST_UPDATE,new Date()));
+    		}
+    		else if(activeWeb == null && activeMobile != null){
+    			result	= this.template.update(query.toString(), 
+            			new MapSqlParameterSource(SADisplayConstants.ORG_CAP_ID,orgCapId)
+            			.addValue(SADisplayConstants.ACTIVE_MOBILE,Boolean.parseBoolean(activeMobile))
+            			.addValue(SADisplayConstants.LAST_UPDATE,new Date()));
+    		}
+    		else {
+    			result	= this.template.update(query.toString(), 
+            			new MapSqlParameterSource(SADisplayConstants.ORG_CAP_ID,orgCapId)
+    					.addValue(SADisplayConstants.ACTIVE_WEB,Boolean.parseBoolean(activeWeb))
+            			.addValue(SADisplayConstants.ACTIVE_MOBILE,Boolean.parseBoolean(activeMobile))
+            			.addValue(SADisplayConstants.LAST_UPDATE,new Date()));
+    		}
+    		
+    		if(result != 1){
+    			return null;
+    		}
+    		
+    	} catch(Exception e) {
+    		log.info("Unable to update orgcaps table with orgcap id #0 and activeWeb #1 and activeMobile #2"
+    				,orgCapId,activeWeb,activeMobile);
+    	}
+		
+		query = QueryManager.createQuery(SADisplayConstants.ORG_CAP_TABLE).selectAllFromTable()
+				.left().join(SADisplayConstants.CAP_TABLE).using(SADisplayConstants.CAP_ID)
+				.where().equals(SADisplayConstants.ORG_CAP_ID);
+		
+		JoinRowCallbackHandler<OrgCap> handler = getOrgCapHandlerWith(new CapRowMapper());
+		
+		try{
+			this.template.query(query.toString(), new MapSqlParameterSource(SADisplayConstants.ORG_CAP_ID,orgCapId), handler);
+			
+			return handler.getSingleResult();
+		}catch(Exception e){
+			log.info("No orgcap found for orgcap id #0", orgCapId);
+		}
+		
+		return null;
+	 }
+	 
+	 public List<Cap> getCaps(){
+		 
+		 QueryModel query = QueryManager.createQuery(SADisplayConstants.CAP_TABLE)
+				 .selectAllFromTable();
+    	 
+		 JoinRowCallbackHandler<Cap> handler = getCapHandlerWith();
+		 
+		try {
+			this.template.query(query.toString(), new MapSqlParameterSource(), handler);
+			
+			return handler.getResults();
+    	} catch(Exception e) {
+    		log.info("Unable to get caps");
+    	}
+		 
+		 return null;
+	 }
+
+
+	/** getOrgDatalayerIds
+	 * @param orgid - id of the organization to search
+	 * @return List<String> - return a list of datalayer ids that belong to the given organization
+	 */
+	public List<String> getOrgDatalayerIds(int orgid)
+	{
+		QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.DATALAYER_ORG_TABLE)
+				.selectFromTable(SADisplayConstants.DATALAYER_ID)
+				.where().equals(SADisplayConstants.ORG_ID);
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(SADisplayConstants.ORG_ID, orgid);
+		return this.template.queryForList(queryModel.toString(), params, String.class);
+	}
+
     /** getHandlerWith
 	   *  @param mappers - optional additional mappers
 	   *  @return JoinRowCallbackHandler<UserOrg>
@@ -507,5 +639,15 @@ public class OrgDAOImpl extends GenericDAO implements OrgDAO {
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private JoinRowCallbackHandler<OrgOrgType> getOrgOrgTypeHandlerWith(JoinRowMapper... mappers) {
 	  return new JoinRowCallbackHandler(new OrgOrgTypeRowMapper(), mappers);
+  }
+  
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private JoinRowCallbackHandler<OrgCap> getOrgCapHandlerWith(JoinRowMapper... mappers) {
+	  return new JoinRowCallbackHandler(new OrgCapRowMapper(), mappers);
+  }
+  
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private JoinRowCallbackHandler<Cap> getCapHandlerWith(JoinRowMapper... mappers) {
+	  return new JoinRowCallbackHandler(new CapRowMapper(), mappers);
   }
 }

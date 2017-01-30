@@ -70,6 +70,7 @@ public class Datalayer extends SADisplayMessageEntity implements SADisplayPersis
     private String legend;
     private Set<DatalayerCollabroom> datalayerCollabrooms = new HashSet<DatalayerCollabroom>(0);
     private Set<Datalayerfolder> datalayerfolders = new HashSet<Datalayerfolder>(0);
+    private Set<DatalayerOrg> datalayerOrgs = new HashSet<DatalayerOrg>(0);
     
 
     public Datalayer() {
@@ -179,6 +180,16 @@ public class Datalayer extends SADisplayMessageEntity implements SADisplayPersis
         this.datalayerfolders = datalayerfolders;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "datalayer")
+    public Set<DatalayerOrg> getDatalayerOrgs() {
+        return this.datalayerOrgs;
+    }
+
+    public void setDatalayerOrgs(
+            Set<DatalayerOrg> datalayerOrgs) {
+        this.datalayerOrgs = datalayerOrgs;
+    }
+
     @Column(name = "datalayersourceid", nullable = false)
     public String getDatalayersourceid() {
         return datalayersourceid;
@@ -217,6 +228,7 @@ public class Datalayer extends SADisplayMessageEntity implements SADisplayPersis
             json.put("datalayersourceid", this.datalayersourceid);
             json.put("usersessionid", this.usersessionid);
             json.put("legend", this.legend);
+            json.put("datalayerOrgs", this.datalayerOrgs);
         } catch (JSONException ex) {
             Logger.getLogger(Document.class.getName()).log(Level.SEVERE, null, ex);
         }

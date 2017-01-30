@@ -53,7 +53,7 @@ import org.json.JSONObject;
 @Table(name = "deletedfeature")
 public class DeletedFeature extends SADisplayMessageEntity implements SADisplayPersistedEntity {
 
-	private String featureid;
+	private String featureId;
 	private int collabroomid;
 	private Date timestamp;
 	
@@ -61,20 +61,20 @@ public class DeletedFeature extends SADisplayMessageEntity implements SADisplayP
 		this.setTimestamp(Calendar.getInstance().getTime());
 	}
 
-	public DeletedFeature(String featureid, int collabroomid, Date timestamp) {
-		this.featureid = featureid;
+	public DeletedFeature(String featureId, int collabroomid, Date timestamp) {
+		this.featureId = featureId;
 		this.collabroomid = collabroomid;
 		this.timestamp = timestamp;
 	}	
 
 	@Id
 	@Column(name = "featureid", unique = true, nullable = false)
-	public String getFeatureid() {
-		return this.featureid;
+	public String getFeatureId() {
+		return this.featureId;
 	}
 
-	public void setFeatureid(String featureid) {
-		this.featureid = featureid;
+	public void setFeatureId(String featureId) {
+		this.featureId = featureId;
 	}	
 
 	@Column(name="collabroomid", unique = false, nullable = false)
@@ -114,7 +114,7 @@ public class DeletedFeature extends SADisplayMessageEntity implements SADisplayP
 	public JSONObject toJSONObject() throws JSONException{
 		JSONObject obj = new JSONObject();
 				
-		obj.put("featureid", this.featureid);
+		obj.put("featureid", this.featureId);
 		obj.put("collabroomid", this.collabroomid);		
 		obj.put("timestamp", this.timestamp); // TODO: Should this get formatted?
 		

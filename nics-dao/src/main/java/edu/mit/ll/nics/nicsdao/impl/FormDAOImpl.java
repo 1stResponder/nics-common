@@ -418,8 +418,6 @@ public class FormDAOImpl extends GenericDAO implements FormDAO {
 	private void processQueryConstraintOptions(StringBuilder sql,
 			Map<String, Object> queryOpts) throws Exception {
 		
-		
-		
 		if (queryOpts.containsKey(QueryConstraint.KEY_DATE_RANGE)) {
 			QueryConstraint.UTCRange dateRange = (QueryConstraint.UTCRange)
 					queryOpts.get(QueryConstraint.KEY_DATE_RANGE);

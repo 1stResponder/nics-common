@@ -58,7 +58,7 @@ public class DeletedFeatureRowMapper extends JoinRowMapper<DeletedFeature> {
     	DeletedFeature feature = new DeletedFeature();
     	        
     	feature.setCollabroomid(rs.getInt("collabroomid"));
-    	feature.setFeatureid(rs.getString("featureid"));
+    	feature.setFeatureId(rs.getString("featureid"));
     	feature.setTimestamp(rs.getDate("timestamp"));
     	
         return feature;

@@ -30,10 +30,14 @@
 package edu.mit.ll.nics.nicsdao.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import edu.mit.ll.nics.common.entity.datalayer.*;
+import edu.mit.ll.nics.nicsdao.mappers.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +54,6 @@ import edu.mit.ll.nics.common.entity.datalayer.Datalayerfolder;
 import edu.mit.ll.nics.common.entity.datalayer.Datalayersource;
 import edu.mit.ll.nics.common.entity.datalayer.Datasource;
 import edu.mit.ll.nics.common.entity.datalayer.Datasourcetype;
-import edu.mit.ll.nics.common.entity.datalayer.Folder;
 import edu.mit.ll.nics.nicsdao.DatalayerDAO;
 import edu.mit.ll.nics.nicsdao.GenericDAO;
 import edu.mit.ll.nics.nicsdao.QueryManager;
@@ -83,6 +86,7 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 				.join(SADisplayConstants.DATALAYER_SOURCE_TABLE).using(SADisplayConstants.DATALAYER_SOURCE_ID)
 				.join(SADisplayConstants.DATASOURCE_TABLE).using(SADisplayConstants.DATASOURCE_ID)
 				.join(SADisplayConstants.DATASOURCE_TYPE_TABLE).using(SADisplayConstants.DATASOURCE_TYPE_ID)
+				.left().join(SADisplayConstants.DATALAYER_ORG_TABLE).using(SADisplayConstants.DATALAYER_ID)
 				.where().equals(SADisplayConstants.FOLDER_ID).orderBy(SADisplayConstants.DATALAYERFOLDER_INDEX);
 		
 		JoinRowCallbackHandler<Datalayerfolder> handler = getDatalayerfolderHandlerWith(
@@ -90,12 +94,14 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 						new DatalayersourceRowMapper().attachAdditionalMapper(
 								new DatasourceRowMapper().attachAdditionalMapper(
 										new DatasourcetypeRowMapper()
-									)
+								)
 							)
-					)
+					).attachAdditionalMapper(
+						new DatalayerOrgRowMapper()
+				)
 		);
-		
-		template.query(queryModel.toString(), 
+
+		template.query(queryModel.toString(),
 				new MapSqlParameterSource(SADisplayConstants.FOLDER_ID, folderid), handler);
 		return handler.getResults();
 	}
@@ -107,6 +113,7 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 				.join(SADisplayConstants.DATALAYER_SOURCE_TABLE).using(SADisplayConstants.DATALAYER_SOURCE_ID)
 				.join(SADisplayConstants.DATASOURCE_TABLE).using(SADisplayConstants.DATASOURCE_ID)
 				.join(SADisplayConstants.DATASOURCE_TYPE_TABLE).using(SADisplayConstants.DATASOURCE_TYPE_ID)
+				.left().join(SADisplayConstants.DATALAYER_ORG_TABLE).using(SADisplayConstants.DATALAYER_ID)
 				.where().equals(SADisplayConstants.FOLDER_ID, folderid)
 				.and().equals(SADisplayConstants.DATALAYER_ID, datalayerid)
 				.orderBy(SADisplayConstants.DATALAYERFOLDER_INDEX);
@@ -116,9 +123,11 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 						new DatalayersourceRowMapper().attachAdditionalMapper(
 								new DatasourceRowMapper().attachAdditionalMapper(
 										new DatasourcetypeRowMapper()
-									)
+								)
 							)
-					)
+					).attachAdditionalMapper(
+						new DatalayerOrgRowMapper()
+				)
 		);
 	
 		this.template.query(query.toString(), query.getParameters(), handler);
@@ -133,6 +142,126 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 	
 		this.template.query(query.toString(), query.getParameters(), handler);
 		return handler.getSingleResult();
+	}
+	
+	 /** getDatalayerFolders
+	 *  @param folderid - String - id of folder holding datalayers
+	 *  @return JSONArray - array of objects representing a datalayer.
+	 *  Each object has information needed by the UI to popuplate the folder
+	 */
+	public List<Datalayer> getCollabRoomDatalayers(int collabRoomId){
+		
+		QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.DATALAYER_TABLE).selectAllFromTable()
+				.join(SADisplayConstants.DATALAYER_SOURCE_TABLE).using(SADisplayConstants.DATALAYER_SOURCE_ID)
+				.join(SADisplayConstants.DATASOURCE_TABLE).using(SADisplayConstants.DATASOURCE_ID)
+				.join(SADisplayConstants.DATASOURCE_TYPE_TABLE).using(SADisplayConstants.DATASOURCE_TYPE_ID)
+				.join(SADisplayConstants.COLLAB_ROOM_DATALAYER_TABLE).using(SADisplayConstants.DATALAYER_ID)
+				.where().equals(SADisplayConstants.COLLAB_ROOM_ID);
+		
+		JoinRowCallbackHandler<Datalayer> handler = getHandlerWith(
+				new DatalayersourceRowMapper().attachAdditionalMapper(
+						new DatasourceRowMapper().attachAdditionalMapper(
+								new DatasourcetypeRowMapper()
+						)
+				)
+		);
+		
+		template.query(queryModel.toString(), 
+				new MapSqlParameterSource(SADisplayConstants.COLLAB_ROOM_ID, collabRoomId), handler);
+		return handler.getResults();
+	}
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DatalayerCollabroom insertCollabRoomDatalayer(int collabRoomId, String dataLayerId, int userid) {
+
+		DatalayerCollabroom datalayerCollabroom = null;
+		
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		map.addValue(SADisplayConstants.USER_ID, userid);
+		map.addValue(SADisplayConstants.COLLAB_ROOM_ID, collabRoomId);
+		map.addValue(SADisplayConstants.DATALAYER_ID, dataLayerId);
+
+		QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.COLLAB_ROOM_DATALAYER_TABLE)
+				.insertInto(new ArrayList(map.getValues().keySet()), SADisplayConstants.COLLAB_ROOM_DATALAYER_ID)
+				.returnValue("*");
+
+		JoinRowCallbackHandler<DatalayerCollabroom> datalayerCollabHandler = getDatalayerCollabRoomHandlerWith();
+		JoinRowCallbackHandler<Datalayer> datalayerHandler = getHandlerWith(
+				new DatalayersourceRowMapper().attachAdditionalMapper(
+						new DatasourceRowMapper().attachAdditionalMapper(
+								new DatasourcetypeRowMapper()
+						)
+				)
+		);
+		
+		template.query(queryModel.toString(), map, datalayerCollabHandler);
+		
+		datalayerCollabroom =  datalayerCollabHandler.getSingleResult();
+		
+		queryModel = QueryManager.createQuery(SADisplayConstants.DATALAYER_TABLE).selectAllFromTable()
+				.join(SADisplayConstants.DATALAYER_SOURCE_TABLE).using(SADisplayConstants.DATALAYER_SOURCE_ID)
+				.join(SADisplayConstants.DATASOURCE_TABLE).using(SADisplayConstants.DATASOURCE_ID)
+				.join(SADisplayConstants.DATASOURCE_TYPE_TABLE).using(SADisplayConstants.DATASOURCE_TYPE_ID)
+				.join(SADisplayConstants.COLLAB_ROOM_DATALAYER_TABLE).using(SADisplayConstants.DATALAYER_ID)
+				.where().equals(SADisplayConstants.DATALAYER_ID);
+		
+		template.query(queryModel.toString(),
+				new MapSqlParameterSource(SADisplayConstants.DATALAYER_ID, dataLayerId) , datalayerHandler);
+		
+		datalayerCollabroom.setDatalayer(datalayerHandler.getSingleResult());
+		
+		return datalayerCollabroom;
+	}
+	
+	public boolean deleteCollabRoomDatalayers(ArrayList<DatalayerCollabroom> collabroomDataLayerIds){
+		
+		int removed = -1;
+		
+		for(int i = 0; i < collabroomDataLayerIds.size(); i++){
+		
+			QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.COLLAB_ROOM_DATALAYER_TABLE)
+					.deleteFromTableWhere().equals(SADisplayConstants.COLLAB_ROOM_ID)
+					.and().equals(SADisplayConstants.DATALAYER_ID);
+			
+			removed = this.template.update(queryModel.toString(), 
+					new MapSqlParameterSource(SADisplayConstants.COLLAB_ROOM_ID,collabroomDataLayerIds.get(i).getCollabroomid())
+					.addValue(SADisplayConstants.DATALAYER_ID, collabroomDataLayerIds.get(i).getDatalayerid()));
+			
+			if(removed != 1){
+				return false;
+			}
+			
+		}
+		
+		return true;
+	}
+	
+	public int insertImageFeature(String id, String location, String filename){
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		map.addValue(SADisplayConstants.IMAGE_ID, id);
+		map.addValue(SADisplayConstants.LOCATION, location);
+		map.addValue(SADisplayConstants.FILENAME, filename);
+		map.addValue(QueryBuilder.TRANS, 4326);
+		
+		QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.IMAGE_FEATURE_TABLE)
+				.insertIntoFeatureWithGeo(Arrays.asList(SADisplayConstants.IMAGE_ID,SADisplayConstants.LOCATION, SADisplayConstants.FILENAME), true, null);
+		try{
+			return this.template.update(queryModel.toString(), map);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public int removeImageFeatures(String id){
+		QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.IMAGE_FEATURE_TABLE)
+				.deleteFromTableWhere().equals(SADisplayConstants.IMAGE_ID, id);
+		try{
+			return this.template.update(queryModel.toString(),queryModel.getParameters());
+		}catch(Exception e){
+			return -1;
+		}
 	}
 	
 	public List<Map<String,Object>> getTrackingLayers(int workspaceId, boolean secured){
@@ -208,7 +337,7 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 				  .where().equals(SADisplayConstants.DATALAYER_ID);
 		
 		JoinRowCallbackHandler<Datalayer> handler = getHandlerWith(new DatalayersourceRowMapper()
-			.attachAdditionalMapper(new DatasourceRowMapper().attachAdditionalMapper(new DatasourcetypeRowMapper())));
+				.attachAdditionalMapper(new DatasourceRowMapper().attachAdditionalMapper(new DatasourcetypeRowMapper())));
 		
 		this.template.query(query.toString(), new MapSqlParameterSource(SADisplayConstants.DATALAYER_ID, datalayerid), handler);
 		
@@ -273,11 +402,11 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 	
 	public String getUnofficialDatalayerId(String collabroom, String folderId){
 		String query = "select datalayerid from datalayer join collabroom on name=displayname join datalayerfolder using(datalayerid) where folderid=:" +
-				SADisplayConstants.FOLDER_ID + " and incidentid=0 and name=:" + SADisplayConstants.COLLAB_ROOM_NAME;
+				SADisplayConstants.FOLDER_ID + " and incidentid=0 and name=:" + SADisplayConstants.NAME;
 		
 		try{
 			return this.template.queryForObject(query.toString(), 
-					new MapSqlParameterSource(SADisplayConstants.COLLAB_ROOM_NAME, collabroom)
+					new MapSqlParameterSource(SADisplayConstants.NAME, collabroom)
 					.addValue(SADisplayConstants.FOLDER_ID, folderId), String.class);
 		}catch(Exception e){
 			log.info("Could not retrieve matching datalayer for collabroom #0", collabroom);
@@ -515,7 +644,21 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 				.and().greaterThanOrEquals(SADisplayConstants.INDEX, index);
 		this.template.update(queryModel.toString(), queryModel.getParameters());
 	}
-	
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public String insertDatalayerOrg(String datalayerId, int orgid) {
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		map.addValue(SADisplayConstants.DATALAYER_ORG_ID, UUID.randomUUID());
+		map.addValue(SADisplayConstants.ORG_ID, orgid);
+		map.addValue(SADisplayConstants.DATALAYER_ID, datalayerId);
+
+		QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.DATALAYER_ORG_TABLE)
+				.insertInto(new ArrayList(map.getValues().keySet()))
+				.returnValue(SADisplayConstants.DATALAYER_ORG_ID);
+
+		return this.template.queryForObject(queryModel.toString(), map, String.class);
+	}
 	 /** getHandlerWith
 		 *  @param mappers - optional additional mappers
 		 *  @return JoinRowCallbackHandler<Datalayer>
@@ -525,41 +668,29 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
     	 return new JoinRowCallbackHandler(new DatalayerRowMapper(), mappers);
     }
     
-    /** getHandlerWith
-	 *  @param mappers - optional additional mappers
-	 *  @return JoinRowCallbackHandler<Datalayer>
-	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private JoinRowCallbackHandler<Datasource> getDatasourceHandlerWith(JoinRowMapper... mappers) {
 		 return new JoinRowCallbackHandler(new DatasourceRowMapper(), mappers);
 	}
-	
-	 /** getHandlerWith
-	 *  @param mappers - optional additional mappers
-	 *  @return JoinRowCallbackHandler<Datalayer>
-	 */
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private JoinRowCallbackHandler<Datalayersource> getDatalayersourceHandlerWith(JoinRowMapper... mappers) {
-		 return new JoinRowCallbackHandler(new DatalayersourceRowMapper(), mappers);
-		}
+		return new JoinRowCallbackHandler(new DatalayersourceRowMapper(), mappers);
+	}
 	
-	 /** getHandlerWith
-		 *  @param mappers - optional additional mappers
-		 *  @return JoinRowCallbackHandler<Datalayer>
-		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		private JoinRowCallbackHandler<Datasourcetype> getDatasourceTypeHandlerWith(JoinRowMapper... mappers) {
-			 return new JoinRowCallbackHandler(new DatasourcetypeRowMapper(), mappers);
-		}
-		
-		 /** getHandlerWith
-		 *  @param mappers - optional additional mappers
-		 *  @return JoinRowCallbackHandler<Datalayer>
-		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		private JoinRowCallbackHandler<Datalayerfolder> getDatalayerfolderHandlerWith(JoinRowMapper... mappers) {
-			 return new JoinRowCallbackHandler(new DatalayerfolderRowMapper(), mappers);
-		}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private JoinRowCallbackHandler<Datasourcetype> getDatasourceTypeHandlerWith(JoinRowMapper... mappers) {
+		return new JoinRowCallbackHandler(new DatasourcetypeRowMapper(), mappers);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private JoinRowCallbackHandler<Datalayerfolder> getDatalayerfolderHandlerWith(JoinRowMapper... mappers) {
+		 return new JoinRowCallbackHandler(new DatalayerfolderRowMapper(), mappers);
+	}
 
-
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private JoinRowCallbackHandler<DatalayerCollabroom> getDatalayerCollabRoomHandlerWith(JoinRowMapper... mappers) {
+		 return new JoinRowCallbackHandler(new DatalayerCollabRoomRowMapper(), mappers);
+	}
+	
 }

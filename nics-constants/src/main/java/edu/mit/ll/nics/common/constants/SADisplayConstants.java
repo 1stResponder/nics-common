@@ -30,7 +30,7 @@
 package edu.mit.ll.nics.common.constants;
 
 public final class SADisplayConstants {
-	
+
 	//CONTACT TYPES
 	public static final String EMAIL_TYPE = "email";
 	public static final String PHONE_HOME_TYPE = "phone_home";
@@ -82,7 +82,7 @@ public final class SADisplayConstants {
 	public static final String COLLAB_ROOM_PERMISSION_TABLE = "CollabroomPermission";
 	public static final String DATALAYER_FOLDER_TABLE = "Datalayerfolder";
 	public static final String FORM_TABLE = "Form";
-	public static final String FORM_TYPE_TABLE = "FormType";
+	public static final String FORM_TYPE_TABLE = "formtype";
 	public static final String ORG_TABLE = "Org";
 	public static final String LOG_TABLE = "Log";
 	public static final String ORG_FOLDER_TABLE = "OrgFolder";
@@ -93,6 +93,7 @@ public final class SADisplayConstants {
 	public static final String INCIDENT_INCIDENTTYPE_TABLE = "incident_incidenttype";
 	public static final String USER_ORG_WORKSPACE_TABLE = "userorg_workspace";
     public static final String UXOREPORT_TABLE = "Uxoreport";
+	public static final String DATALAYER_ORG_TABLE = "datalayer_org";
 	
 	//COMMON COLUMN NAMES
 	public static final String CREATED = "created";
@@ -114,6 +115,8 @@ public final class SADisplayConstants {
 	//USER COLUMNS
 	public static final String USER_ID = "userId";
 	public static final String USER_NAME = "username";
+	public static final String FIRST_NAME = "firstname";
+	public static final String LAST_NAME = "lastname";
 	public static final String ENABLED = "enabled";
 	
 	//MESSAGE ARCHIVE COLUMNS
@@ -128,6 +131,7 @@ public final class SADisplayConstants {
 	//USERSESSION CONSTANTS
 	public static final String USERSESSION_ID ="usersessionid";
 	public static final String SESSION_ID = "sessionid";
+	public static final String LOGGED_OUT = "loggedout";
 	
 	//DATASOURCE TYPE CONSTANTS
 	public static final String DATASOURCE_TYPE_NAME = "typename";
@@ -159,6 +163,12 @@ public final class SADisplayConstants {
 	public static final String FORM_TYPE_NAME = "formtypename";
 	public static final String FORM_TYPE_ID = "formtypeid";
 	public static final String SEQ_TIME = "seqtime";
+
+	//ORG DATALAYER COLUMN NAMES
+	public static final String DATALAYER_ORG_ID = "datalayer_orgid";
+
+	//COLLABROOM DATALAYER COLUMN NAMES
+	public static final String COLLABROOM_DATALAYER_ID = "collabroomdatalayerid";
 		
 	// LDDRS-648
 	// FORM TYPE CONSTANTS
@@ -244,7 +254,7 @@ public final class SADisplayConstants {
 	public static final String CONTACT_ID = "contactid";
 	public static final String CONTACT_ENABLED = "contact.enabled";
 	public static final String CURRENT_USERSESSION_USER_ID = "currentusersession.userid";
-	//public static final String ORG_FORM_TYPE_TABLE = "orgformtype";
+	public static final String ORG_FORM_TYPE_TABLE = "orgformtype";
 	public static final String DISTRIBUTED = "distributed";
 	public static final String FORM_ID = "formid";
 	public static final String SEQ_NUM = "seqnum";
@@ -345,6 +355,28 @@ public final class SADisplayConstants {
 	public static final String INCIDENT_MAP = "Incident Map";
 	public static final String PASSWORD = "password";
 	public static final String INCIDENT_CREATED = "incident.created";
+	public static final String CAP_ID = "capid";
+	public static final String NAME = "name";
+	public static final String ORG_CAP_ID = "orgcapid";
+	public static final String ACTIVE_MOBILE = "activemobile";
+	public static final String ACTIVE_WEB = "activeweb";
+	public static final String ORG_CAP_TABLE = "orgcap";
+	public static final Object WEB = "web";
+	public static final Object MOBILE = "mobile";
+	public static final String CAP_TABLE = "cap";
 	public static final Object TRACKING = "Tracking";
 	public static final Object DATALAYER_DISPLAYNAME = "datalayer.displayname";
+
+	public static final String COLLAB_ROOM_DATALAYER_ID = "collabroomdatalayerid";
+	public static final String COLLAB_ROOM_DATALAYER_TABLE = "collabroomdatalayer";
+	public static final String ALERT_SEQUENCE_TABLE = "alert_seq";
+	public static final String ALERT_ID = "alertid";
+	public static final String ALERT_TABLE = "alert";
+	public static final String ALERTUSER_TABLE = "alertuser";
+	public static final String ALERT_USER_ID = "alertuserid";
+	public static final String ALERT_USER_SEQUENCE_TABLE = "alert_user_seq";
+	public static final String ALERTUSER_USER_ID = "alertuser.userid";
+	public static final String IMAGE_FEATURE_TABLE = "imagefeature";
+	public static final String LOCATION = "location";
+	public static final String IMAGE_ID = "imageid";
 }

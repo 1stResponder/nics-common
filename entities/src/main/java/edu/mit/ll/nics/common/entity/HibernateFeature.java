@@ -63,7 +63,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Table(name = "feature")
 public class HibernateFeature extends SADisplayMessageEntity implements SADisplayPersistedEntity {
 
-	private String featureid;
+	private String featureId;
 	private String version;
 	//private Usersession usersession;
 	private String type;
@@ -101,12 +101,12 @@ public class HibernateFeature extends SADisplayMessageEntity implements SADispla
 
 	@Id
 	@Column(name = "featureid", unique = true, nullable = false)
-	public String getFeatureid() {
-		return this.featureid;
+	public String getFeatureId() {
+		return this.featureId;
 	}
 
-	public void setFeatureid(String featureid) {
-		this.featureid = featureid;
+	public void setFeatureId(String featureId) {
+		this.featureId = featureId;
 	}
 
 	@Column(name = "version", nullable = false, length = 12)
@@ -328,7 +328,7 @@ public class HibernateFeature extends SADisplayMessageEntity implements SADispla
 	}
 
 	@Type(type="org.hibernate.spatial.GeometryType")
-	@Column(name = "the_geom")
+	@Column(name = "geometry")
 	public Geometry getTheGeom() {
 		return this.geometry;
 	}
@@ -452,9 +452,9 @@ public class HibernateFeature extends SADisplayMessageEntity implements SADispla
 		obj.put("from", fromObj);
 		obj.put("attributes", this.buildAttributes());
 		if(this.geometry != null){
-			obj.put("theGeom", this.geometry.toString());
+			obj.put("geometry", this.geometry.toString());
 		}
-		obj.put("featureid", this.featureid);
+		obj.put("featureid", this.featureId);
 		obj.put("type", this.type);
 		obj.put("time", this.time);
 		obj.put("version", this.version);

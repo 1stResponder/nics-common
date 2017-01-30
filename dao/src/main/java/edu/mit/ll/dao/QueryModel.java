@@ -319,7 +319,11 @@ public class QueryModel{
 	
 	public QueryModel insertIntoFeatureWithGeo(List<String> fields, boolean transform, String primaryKey){
 		this.buildInsert(fields, primaryKey);
-		this.FEATURESVALUES(fields, transform, true);
+		if(primaryKey != null){
+			this.FEATURESVALUES(fields, transform, true);
+		}else{
+			this.FEATURESVALUES(fields, transform, false);
+		}
 		return this;
 	}
 	
@@ -540,10 +544,13 @@ public class QueryModel{
 			
 			//handle geometry
 			if(preDelimiter!=null){//VALUES list
-				if((field.equalsIgnoreCase(QueryBuilder.GEOMETRY) || field.equalsIgnoreCase(QueryBuilder.BOUNDS)) && !transform ){
-					field = insertGeometry(field);
-				}else if((field.equalsIgnoreCase(QueryBuilder.GEOMETRY) || field.equalsIgnoreCase(QueryBuilder.BOUNDS)) && transform){
-					field = insertGeometryWithGeo(field);
+				if((field.equalsIgnoreCase(QueryBuilder.GEOMETRY) || field.equalsIgnoreCase(QueryBuilder.BOUNDS)) ||
+						field.equalsIgnoreCase(QueryBuilder.LOCATION)){
+					if(!transform){
+						field = insertGeometry(field);
+					}else{
+						field = insertGeometryWithGeo(field);
+					}
 				}else{
 					result.append(preDelimiter);
 				}

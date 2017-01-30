@@ -215,6 +215,9 @@ public class SuperGeoServer {
 
     protected boolean restPost(String appendUrl, String content, String contentType, Map<String, String> params) {
         try {
+
+            log.log(Level.INFO, "Append Url: " + appendUrl);
+
             HttpURLConnection connection = httpCall(appendUrl, METHOD_POST, content, contentType, params);
             if (connection.getResponseCode() == POST_SUCCESS || connection.getResponseCode() == GET_SUCCESS) {
                 log.log(Level.INFO, "Succesful POST to {0}{1}", new Object[]{serverUrl, appendUrl});

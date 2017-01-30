@@ -40,7 +40,7 @@
 	<parent>
 		<groupId>edu.mit.ll.nics.common</groupId>
 		<artifactId>master-pom</artifactId>
-		<version>6.3</version>
+		<version>6.4-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -129,15 +129,16 @@
 
     <build>
         <plugins>
-            <plugin>
+           <!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
+            </plugin>-->
 
 			<!-- Run testng unit tests with surefire plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.version}</version>
 				<configuration>
 					<skipTests>true</skipTests>
 					<suiteXmlFiles>

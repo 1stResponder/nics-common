@@ -69,6 +69,9 @@ private static Logger log;
     @Override
     public void initialize() {
     	log = LoggerFactory.getLogger(CollabRoomDAOImpl.class);
+    	System.out.println("Initializing CollabRoom DAO....");
+    	System.out.println("DATASOURCE: " + datasource);
+    	
         this.template = new NamedParameterJdbcTemplate(datasource);
     }
 
@@ -92,12 +95,12 @@ private static Logger log;
     	QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.COLLAB_ROOM_TABLE)
     			.selectFromTable(SADisplayConstants.COLLAB_ROOM_ID)
     			.join(SADisplayConstants.INCIDENT_TABLE).using(SADisplayConstants.INCIDENT_ID)
-    			.where().equals(SADisplayConstants.COLLAB_ROOM_NAME)
+    			.where().equals(SADisplayConstants.NAME)
     			.and().equals(SADisplayConstants.WORKSPACE_ID);
     	
     	try{
 	    	return this.template.queryForInt(queryModel.toString(), 
-	    			new MapSqlParameterSource(SADisplayConstants.COLLAB_ROOM_NAME, roomname)
+	    			new MapSqlParameterSource(SADisplayConstants.NAME, roomname)
 	    				.addValue(SADisplayConstants.WORKSPACE_ID, workspaceId));
     	}catch(Exception e){
     		log.info("there was an error retrieving the collab room id for collab room #0", roomname);
@@ -109,12 +112,12 @@ private static Logger log;
     	QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.COLLAB_ROOM_TABLE)
     			.selectFromTable(SADisplayConstants.COLLAB_ROOM_ID)
     			.join(SADisplayConstants.INCIDENT_TABLE).using(SADisplayConstants.INCIDENT_ID)
-    			.where().equals(SADisplayConstants.COLLAB_ROOM_NAME)
+    			.where().equals(SADisplayConstants.NAME)
     			.and().equals(SADisplayConstants.INCIDENT_ID);
     	
     	try{
 	    	return this.template.queryForInt(queryModel.toString(), 
-	    			new MapSqlParameterSource(SADisplayConstants.COLLAB_ROOM_NAME, roomname)
+	    			new MapSqlParameterSource(SADisplayConstants.NAME, roomname)
 	    			.addValue(SADisplayConstants.INCIDENT_ID, 0)); //Assume no workspace - no incident
     	}catch(Exception e){
     		log.info("there was an error retrieving the collab room id for collab room #0:\n" +
@@ -170,7 +173,7 @@ private static Logger log;
 	
 	public String getCollabroomName(int collabroomid){
 		QueryModel query = QueryManager.createQuery(SADisplayConstants.COLLAB_ROOM_TABLE).
-				selectFromTable(SADisplayConstants.COLLAB_ROOM_NAME).where().equals(SADisplayConstants.COLLAB_ROOM_ID);
+				selectFromTable(SADisplayConstants.NAME).where().equals(SADisplayConstants.COLLAB_ROOM_ID);
 		
 		try{
 			return this.template.queryForObject(
@@ -199,12 +202,12 @@ private static Logger log;
 				.selectFromTable(SADisplayConstants.COLLAB_ROOM_ID)
 				.join(SADisplayConstants.INCIDENT_TABLE).using(SADisplayConstants.INCIDENT_ID)
 				.where().equals(SADisplayConstants.INCIDENT_ID).and()
-				.equals(SADisplayConstants.COLLAB_ROOM_NAME);
+				.equals(SADisplayConstants.NAME);
 		
 		try{
 			this.template.queryForObject(queryModel.toString(), 
 					new MapSqlParameterSource(SADisplayConstants.INCIDENT_ID, incidentId)
-						.addValue(SADisplayConstants.COLLAB_ROOM_NAME, collabRoomName), Integer.class);
+						.addValue(SADisplayConstants.NAME, collabRoomName), Integer.class);
 		}catch(Exception e){
 			return false;
 		}
@@ -216,12 +219,12 @@ private static Logger log;
 				.selectFromTable(SADisplayConstants.COLLAB_ROOM_ID)
 				.join(SADisplayConstants.INCIDENT_TABLE).using(SADisplayConstants.INCIDENT_ID)
 				.where().equals(SADisplayConstants.INCIDENT_ID).and()
-				.equals(SADisplayConstants.COLLAB_ROOM_NAME);
+				.equals(SADisplayConstants.NAME);
 		
 		try{
 			this.template.queryForInt(queryModel.toString(), 
 					new MapSqlParameterSource(SADisplayConstants.INCIDENT_ID, 0)
-					.addValue(SADisplayConstants.COLLAB_ROOM_NAME, text));
+					.addValue(SADisplayConstants.NAME, text));
 		}catch(Exception e){
 			return false;
 		}
@@ -259,12 +262,12 @@ private static Logger log;
 	public boolean isIncidentMap(long collabroomId, String incidentMap){
 		QueryModel query = QueryManager.createQuery(SADisplayConstants.COLLAB_ROOM_TABLE)
 				.selectFromTableWhere(SADisplayConstants.COLLAB_ROOM_ID)
-				.equals(SADisplayConstants.COLLAB_ROOM_NAME)
+				.equals(SADisplayConstants.NAME)
 				.and().equals(SADisplayConstants.COLLAB_ROOM_ID);
 		try{
 			this.template.queryForObject(query.toString(), 
 					new MapSqlParameterSource(SADisplayConstants.COLLAB_ROOM_ID, collabroomId)
-					.addValue(SADisplayConstants.COLLAB_ROOM_NAME, incidentMap),
+					.addValue(SADisplayConstants.NAME, incidentMap),
 					Integer.class);
 		}catch(Exception e){
 			return false;
@@ -322,7 +325,7 @@ private static Logger log;
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(SADisplayConstants.USERSESSION_ID, collabroom.getUsersessionid());
 		params.put(SADisplayConstants.COLLAB_ROOM_ID, collabroom.getCollabRoomId());
-		params.put(SADisplayConstants.COLLAB_ROOM_NAME, collabroom.getName());
+		params.put(SADisplayConstants.NAME, collabroom.getName());
 		params.put(SADisplayConstants.CREATED, collabroom.getCreated());
 		params.put(SADisplayConstants.INCIDENT_ID, collabroom.getIncidentid());
 		

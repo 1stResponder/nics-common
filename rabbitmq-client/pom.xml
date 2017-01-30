@@ -40,7 +40,8 @@
 	<parent>
 		<groupId>edu.mit.ll.nics.common</groupId>
 		<artifactId>master-pom</artifactId>
-		<version>6.3</version>
+
+		<version>6.4-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 

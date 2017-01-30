@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    (c) Copyright, 2008-2014 Massachusetts Institute of Technology.
+
+        This material may be reproduced by or for the
+        U.S. Government pursuant to the copyright license
+        under the clause at DFARS 252.227-7013 (June, 1995).
+
+-->
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Folder>
+	<name>LAYERNAME</name>
+	<GroundOverlay>
+		<name>WMS Overlay</name>
+		<Icon>
+			<href>MAPSERVERURL/geoserver/WORKSPACENAME/wms?layers=WORKSPACENAME:LAYERNAME&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;SRS=EPSG:4326&amp;WIDTH=1024&amp;HEIGHT=1024&amp;STYLES=collabRoomStyle&amp;TRANSPARENT=TRUE&amp;FORMAT=image/png8</href>
+			<refreshMode>onInterval</refreshMode>
+			<refreshInterval>60</refreshInterval>
+			<viewRefreshMode>onStop</viewRefreshMode>
+			<viewBoundScale>1</viewBoundScale>
+		</Icon>
+		<LatLonBox>
+			<north>40</north>
+			<south>30</south>
+			<east>-110</east>
+			<west>-120</west>
+		</LatLonBox>
+	</GroundOverlay>
+
+  <NetworkLink>
+	 <name>Feature Info</name>
+	 <visibility>1</visibility>
+	 <open>1</open>
+	 <LookAt>
+		<longitude>-116.75</longitude>
+		<latitude>33.9</latitude>
+		<altitude>10000</altitude>
+		<range>50000</range>
+		<tilt>0.0</tilt>
+		<heading>0.0</heading>
+		<altitudeMode>clampToGround</altitudeMode>
+	 </LookAt>
+	 <Url>
+		<href><![CDATA[MAPSERVERURL/geoserver/WORKSPACENAME/wms?layers=WORKSPACENAME:LAYERNAME&request=GetMap&service=wms&styles=collabRoomStyle_blank&format_options=SUPEROVERLAY:false;KMPLACEMARK:false;KMSCORE:40;KMATTR:true;&srs=EPSG:4326&height=1024&width=1024&format=application/vnd.google-earth.kmz&transparent=false&version=1.1.1]]></href>
+		<refreshMode>onInterval</refreshMode>
+		<refreshInterval>60</refreshInterval>
+		<viewRefreshMode>onStop</viewRefreshMode>
+		<viewRefreshTime>1</viewRefreshTime>
+	 </Url>
+  </NetworkLink>
+  <LookAt>
+	 <longitude>-116.75</longitude>
+	 <latitude>33.9</latitude>
+	 <altitude>10000</altitude>
+	 <range>50000</range>
+	 <tilt>0.0</tilt>
+	 <heading>0.0</heading>
+	 <altitudeMode>clampToGround</altitudeMode>
+  </LookAt>
+</Folder>
+</kml>

@@ -49,7 +49,7 @@ public class CollabRoomRowMapper extends JoinRowMapper<CollabRoom> {
         collabroom.setCollabRoomId(rs.getInt(SADisplayConstants.COLLAB_ROOM_ID));
         collabroom.setCreated(rs.getDate(SADisplayConstants.CREATED));
         collabroom.setIncidentid(rs.getInt(SADisplayConstants.INCIDENT_ID));
-        collabroom.setName(rs.getString(SADisplayConstants.COLLAB_ROOM_NAME));
+        collabroom.setName(rs.getString(SADisplayConstants.NAME));
         collabroom.setUsersessionid(rs.getInt(SADisplayConstants.USERSESSION_ID));
         return collabroom;
    }

@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
-
-    (c) Copyright, 2008-2013 Massachusetts Institute of Technology.
-
-        This material may be reproduced by or for the
-        U.S. Government pursuant to the copyright license
-        under the clause at DFARS 252.227-7013 (June, 1995).
-
--->
 <StyledLayerDescriptor version="1.0.0"
     xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
     xmlns="http://www.opengis.net/sld"

@@ -74,6 +74,7 @@ import edu.mit.ll.nics.nicsdao.UserDAO;
 import edu.mit.ll.nics.nicsdao.mappers.ContactRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.ContactTypeRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.CurrentUserSessionRowMapper;
+//import edu.mit.ll.nics.nicsdao.mappers.UsersessionRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.FeatureRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.OrgRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.UserFeatureRowMapper;
@@ -134,7 +135,7 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		map.addValue(SADisplayConstants.LASTNAME, lastname);
 		map.addValue(SADisplayConstants.USER_NAME, username);
 		//map.addValue(SADisplayConstants.PASSWORD_HASH, PasswordHash.instance().generateSaltedHash(password, username, "sha"));
-		map.addValue(SADisplayConstants.PASSWORD_HASH, generateSaltedHash(password, username, "sha"));
+		map.addValue(SADisplayConstants.PASSWORD_HASH, password);
 		map.addValue(SADisplayConstants.ENABLED, false);
 		map.addValue(SADisplayConstants.ACTIVE, true);
 		map.addValue(SADisplayConstants.LAST_UPDATED, Calendar.getInstance().getTime());
@@ -192,7 +193,6 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
     		log.info("Failed up update user password.", e.getMessage());
     		return false;
     	}
-    	
     	
     	return true;
     }
@@ -564,7 +564,37 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		
 		return handler.getResults();
     }
-    
+	public User getUserByPastSessionId(long userSessionId){
+		 if(this.template == null) {
+           this.initialize();
+       }
+		 StringBuffer fields = new StringBuffer();
+	        fields.append(SADisplayConstants.FIRST_NAME);
+	        fields.append(QueryBuilder.COMMA);
+	        fields.append(SADisplayConstants.LAST_NAME);
+
+		QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.USER_ESCAPED)
+				.selectAllFromTable()
+				.join(SADisplayConstants.USER_ORG_TABLE).using(SADisplayConstants.USER_ID)
+				.join(SADisplayConstants.USERSESSION_TABLE).using(SADisplayConstants.USER_ORG_ID)
+				.where().equals(SADisplayConstants.USERSESSION_ID);
+		
+		JoinRowCallbackHandler<User> handler = getHandlerWith();
+ 		
+		this.template.query(queryModel.toString(), 
+	            new MapSqlParameterSource(SADisplayConstants.USERSESSION_ID, userSessionId), 
+	            handler);
+		
+		
+       
+       try{
+       	return handler.getSingleResult();
+       }catch(Exception e){
+       	log.info("No user was found with userid " + userSessionId);
+       }
+       return null;
+	}
+
     public List<User> getAllEnabledUsers(){
     	
     	QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.USER_ESCAPED)
@@ -1046,7 +1076,7 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		 * - create() hashes password, but the API already gives it a hashed password?
 		 * - create() returns the userid you sent it, make sure to check what happens in a failure
 		*/
-		int userId = create(user.getFirstname(), user.getLastname(), user.getUsername(), user.getPasswordHash());
+		int userId = create(user.getFirstname(), user.getLastname(), user.getUsername(), user.getPasswordIDP());
 		
 		// TODO: better way to do batch update, rather than loop through all this?
 		if(contacts != null && contacts.size() > 0) {

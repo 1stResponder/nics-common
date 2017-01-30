@@ -46,6 +46,7 @@ public interface UserDAO extends BaseDAO {
     public User getUser(String username);
     public User getUserById(long userId);
     public User getUserBySessionId(long usersessionId);
+    public User getUserByPastSessionId(long usersessionId);
     public void updateNames(int userId, String firstName, String lastName);
 	public List<UserFeature> getUserFeatures(int id, int workspaceId);
 	public List<User> getActiveUsers(int workspaceId);
