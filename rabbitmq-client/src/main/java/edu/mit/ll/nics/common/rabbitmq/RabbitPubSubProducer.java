@@ -46,13 +46,13 @@ public class RabbitPubSubProducer extends RabbitClient {
 			throws IOException {
 		super(hostname, rabbitUsername, rabbitUserpwd);
 		initialize(hostname, exchangeName);
-	}	
+	}
 	
 	private void initialize(String hostname, String exchangeName)
 			throws IOException {
 		declareExchange(exchangeName);
 		this.exchangeName = exchangeName;
-	}	
+	}
 
 	public void produce(String routingKey, String message) throws IOException {
         if (message == null) {
@@ -60,12 +60,14 @@ public class RabbitPubSubProducer extends RabbitClient {
         }
 		if (routingKey == null) {
 			throw new NullPointerException("routingKey is null");
-		}        
+		}
+
+		getChannel().queueDeclare(routingKey, true, false, true, null);
         getChannel().basicPublish(exchangeName, routingKey, null, message.getBytes());
         System.out.println(" [x] Sent '" + routingKey + "':'" + message + "'");	
 	}
 
 	public void destroy() {
 		super.destroy();
-	}		
+	}
 }

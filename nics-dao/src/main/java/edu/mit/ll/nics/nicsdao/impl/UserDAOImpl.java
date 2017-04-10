@@ -135,7 +135,7 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		map.addValue(SADisplayConstants.LASTNAME, lastname);
 		map.addValue(SADisplayConstants.USER_NAME, username);
 		//map.addValue(SADisplayConstants.PASSWORD_HASH, PasswordHash.instance().generateSaltedHash(password, username, "sha"));
-		map.addValue(SADisplayConstants.PASSWORD_HASH, password);
+		map.addValue(SADisplayConstants.PASSWORD_HASH, generateSaltedHash(password, username, "sha"));
 		map.addValue(SADisplayConstants.ENABLED, false);
 		map.addValue(SADisplayConstants.ACTIVE, true);
 		map.addValue(SADisplayConstants.LAST_UPDATED, Calendar.getInstance().getTime());
@@ -145,6 +145,14 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		
 		return userid;
     }
+
+    public int create(String firstname, String lastname, String username, String password, String rawPassword){
+    
+      int userid = create(firstname, lastname, username, password);
+
+      return userid;
+    }
+    
     
 
     /**
@@ -196,8 +204,22 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
     	
     	return true;
     }
-    
-    
+
+    public boolean updateUserPW(int userId, String passwordHash, String rawPass){
+      
+      boolean isSuccess = false;
+
+      try{
+        isSuccess = updateUserPW(userId,passwordHash);
+      }
+      catch(Exception e){
+        log.info("Failed up update user password.", e.getMessage());
+        return false;
+      }
+      
+      return isSuccess;
+    }
+   
     /**
      * 
      * TODO: This is taken from JBoss' PasswordHash class, which itself is deprecated. But we need
@@ -1076,7 +1098,8 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		 * - create() hashes password, but the API already gives it a hashed password?
 		 * - create() returns the userid you sent it, make sure to check what happens in a failure
 		*/
-		int userId = create(user.getFirstname(), user.getLastname(), user.getUsername(), user.getPasswordIDP());
+
+		int userId = create(user.getFirstname(), user.getLastname(), user.getUsername(), user.getPasswordHash());
 		
 		// TODO: better way to do batch update, rather than loop through all this?
 		if(contacts != null && contacts.size() > 0) {

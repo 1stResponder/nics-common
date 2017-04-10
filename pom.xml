@@ -347,6 +347,7 @@
 					<artifactId>jstd-maven-plugin</artifactId>
 					<version>${jstd.plugin.version}</version>
 					<configuration>
+						<skipTests>true</skipTests>
 						<testOutput>${project.build.directory}/js-test-reports</testOutput>
 					</configuration>
 					<executions>

@@ -169,7 +169,7 @@
                     <PointSymbolizer>
                         <Graphic>
                             <ExternalGraphic>
-                                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="../nics/${graphic}"/>
+                                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://${graphicurl}"/>
                                 <Format>image/png</Format>
                             </ExternalGraphic>
                             <Size>
@@ -463,4 +463,3 @@
         </UserStyle>
     </NamedLayer>
 </StyledLayerDescriptor>
-

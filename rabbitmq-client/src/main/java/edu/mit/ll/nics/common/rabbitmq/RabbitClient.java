@@ -40,7 +40,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 public abstract class RabbitClient {
 
-	public static final String AMQ_TOPIC = "amq.topic"; 
+	public static final String AMQ_TOPIC = "amq.topic";
 	
 	private Connection connection;
 
@@ -146,5 +146,5 @@ public abstract class RabbitClient {
 		if (!isDeclaredByRabbit(exchangeName)) {
 			getChannel().exchangeDeclare(exchangeName, "topic", true, true, new HashMap<String, Object>());
 		}
-	}		
+	}
 }

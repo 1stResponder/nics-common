@@ -68,4 +68,6 @@ public interface DatalayerDAO extends BaseDAO {
 	public boolean deleteCollabRoomDatalayers(ArrayList<DatalayerCollabroom> collabroomDataLayerIds);
 	public int insertImageFeature(String id, String location, String filename);
 	public int removeImageFeatures(String id);
+	public String getImageFileName(String id);
+
 }

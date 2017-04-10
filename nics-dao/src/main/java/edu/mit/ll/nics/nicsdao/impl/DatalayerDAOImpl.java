@@ -237,6 +237,24 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
 		return true;
 	}
 	
+	
+	public String getImageFileName(String id){
+
+		// SADisplayConstants.IMAGE_FEATURE_TABLE
+		// SADisplayConstants.FILENAME
+		// SADisplayConstants.IMAGE_ID
+		try{
+
+			QueryModel query = QueryManager.createQuery(SADisplayConstants.IMAGE_FEATURE_TABLE).selectFromTable(SADisplayConstants.FILENAME).where().equals(SADisplayConstants.IMAGE_ID);
+
+			return this.template.queryForObject(query.toString(), new MapSqlParameterSource(SADisplayConstants.IMAGE_ID,id), String.class);
+				
+		}catch(Exception e){
+			log.error("Error retrieving filename for " + id,e);
+		}
+		return null;
+	}
+
 	public int insertImageFeature(String id, String location, String filename){
 		MapSqlParameterSource map = new MapSqlParameterSource();
 		map.addValue(SADisplayConstants.IMAGE_ID, id);
@@ -668,25 +686,41 @@ public class DatalayerDAOImpl extends GenericDAO implements DatalayerDAO {
     	 return new JoinRowCallbackHandler(new DatalayerRowMapper(), mappers);
     }
     
+    /** getHandlerWith
+	 *  @param mappers - optional additional mappers
+	 *  @return JoinRowCallbackHandler<Datalayer>
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private JoinRowCallbackHandler<Datasource> getDatasourceHandlerWith(JoinRowMapper... mappers) {
 		 return new JoinRowCallbackHandler(new DatasourceRowMapper(), mappers);
 	}
-
+	
+	 /** getHandlerWith
+	 *  @param mappers - optional additional mappers
+	 *  @return JoinRowCallbackHandler<Datalayer>
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private JoinRowCallbackHandler<Datalayersource> getDatalayersourceHandlerWith(JoinRowMapper... mappers) {
 		return new JoinRowCallbackHandler(new DatalayersourceRowMapper(), mappers);
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private JoinRowCallbackHandler<Datasourcetype> getDatasourceTypeHandlerWith(JoinRowMapper... mappers) {
-		return new JoinRowCallbackHandler(new DatasourcetypeRowMapper(), mappers);
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private JoinRowCallbackHandler<Datalayerfolder> getDatalayerfolderHandlerWith(JoinRowMapper... mappers) {
-		 return new JoinRowCallbackHandler(new DatalayerfolderRowMapper(), mappers);
-	}
+	 /** getHandlerWith
+		 *  @param mappers - optional additional mappers
+		 *  @return JoinRowCallbackHandler<Datalayer>
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		private JoinRowCallbackHandler<Datasourcetype> getDatasourceTypeHandlerWith(JoinRowMapper... mappers) {
+			 return new JoinRowCallbackHandler(new DatasourcetypeRowMapper(), mappers);
+		}
+		
+		 /** getHandlerWith
+		 *  @param mappers - optional additional mappers
+		 *  @return JoinRowCallbackHandler<Datalayer>
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		private JoinRowCallbackHandler<Datalayerfolder> getDatalayerfolderHandlerWith(JoinRowMapper... mappers) {
+			 return new JoinRowCallbackHandler(new DatalayerfolderRowMapper(), mappers);
+		}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private JoinRowCallbackHandler<DatalayerCollabroom> getDatalayerCollabRoomHandlerWith(JoinRowMapper... mappers) {

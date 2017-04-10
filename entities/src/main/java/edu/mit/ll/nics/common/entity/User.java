@@ -69,7 +69,6 @@ public class User extends SADisplayMessageEntity implements SADisplayPersistedEn
 	private String username;
 	private String passwordHash;
 	private byte[] passwordEncrypted;
-	private String idpPass; // used for IDP
 	private String firstname;
 	private String lastname;
 	private Date lastupdated;
@@ -281,16 +280,6 @@ public class User extends SADisplayMessageEntity implements SADisplayPersistedEn
 
 	public void setCollabroompermissions(Set<CollabroomPermission> collabroompermissions) {
 		this.collabroompermissions = collabroompermissions;
-	}
-
-	public void setPasswordIDP(String idpPa)
-	{
-		this.idpPass = idpPa;
-	}
-
-	public String getPasswordIDP()
-	{
-		return this.idpPass;
 	}
 	
 	/*@ManyToMany(targetEntity = SystemRole.class, fetch=FetchType.EAGER)

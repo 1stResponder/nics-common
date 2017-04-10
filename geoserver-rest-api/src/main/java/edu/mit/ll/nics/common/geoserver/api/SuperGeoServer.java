@@ -92,7 +92,7 @@ public class SuperGeoServer {
             url = url.substring(0, url.length() - 1);
         }
         if (!url.endsWith("/rest")) {
-            url.concat("/rest");
+            url = url.concat("/rest");
         }
         return url;
     }

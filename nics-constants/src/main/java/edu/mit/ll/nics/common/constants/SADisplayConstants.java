@@ -95,6 +95,8 @@ public final class SADisplayConstants {
     public static final String UXOREPORT_TABLE = "Uxoreport";
 	public static final String DATALAYER_ORG_TABLE = "datalayer_org";
 	
+	public static final String GRAPHIC_URL = "graphicurl";
+
 	//COMMON COLUMN NAMES
 	public static final String CREATED = "created";
 
