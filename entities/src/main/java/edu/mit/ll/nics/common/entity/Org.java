@@ -49,6 +49,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Proxy;
 import org.json.JSONObject;
+import edu.mit.ll.nics.common.constants.SADisplayConstants;
 
 
 /**

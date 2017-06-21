@@ -70,6 +70,5 @@ public interface UserDAO extends BaseDAO {
 	public int setUserActive(int userId, boolean active);
 	public int isEnabled(String username);
 	public long getUserId(String username);
-	public int create(String firstname, String lastname, String username, String password, String rawPassword);
 	public boolean updateUserPW(int userId, String passwordHash, String rawPass);
 }

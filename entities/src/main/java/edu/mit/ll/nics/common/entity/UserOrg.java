@@ -48,6 +48,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Proxy;
+import edu.mit.ll.nics.common.constants.SADisplayConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -218,6 +219,43 @@ public class UserOrg extends SADisplayMessageEntity implements SADisplayPersiste
 
 	public void setUsersessions(Set<Usersession> usersessions) {
 		this.usersessions = usersessions;
+	}
+
+	public boolean isSuperUser()
+	{
+		int role = SADisplayConstants.SUPER_ROLE_ID;
+
+		return isRole(role);
+	}
+
+	public boolean isAdminUser()
+	{
+		int role = SADisplayConstants.ADMIN_ROLE_ID;
+
+		return isRole(role);
+	}
+
+	public boolean isElevated()
+	{
+		return isAdminUser() || isSuperUser();
+	}
+
+	public boolean isGisUser()
+	{
+		int role = SADisplayConstants.GIS_ROLE_ID;
+
+		return isRole(role);
+	}
+
+	// return true is this use has the specified role
+	public boolean isRole(int roleid)
+	{
+		if(getSystemroleid() == roleid)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override

@@ -51,6 +51,7 @@ import edu.mit.ll.nics.common.entity.CurrentUserSession;
 import edu.mit.ll.nics.common.entity.Incident;
 import edu.mit.ll.nics.common.entity.IncidentIncidentType;
 import edu.mit.ll.nics.common.entity.IncidentType;
+import edu.mit.ll.nics.common.entity.Org;
 import edu.mit.ll.nics.common.constants.SADisplayConstants;
 import edu.mit.ll.nics.nicsdao.GenericDAO;
 import edu.mit.ll.nics.nicsdao.IncidentDAO;
@@ -59,6 +60,7 @@ import edu.mit.ll.nics.nicsdao.mappers.IncidentRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.IncidentTypeRowMapper;
 import edu.mit.ll.nics.nicsdao.mappers.Incident_IncidentTypeRowMapper;
 import edu.mit.ll.nics.common.entity.Incident;
+import edu.mit.ll.nics.nicsdao.impl.OrgDAOImpl;
 import edu.mit.ll.nics.common.entity.datalayer.Folder;
 
 public class IncidentDAOImpl extends GenericDAO implements IncidentDAO {
@@ -66,6 +68,7 @@ public class IncidentDAOImpl extends GenericDAO implements IncidentDAO {
     private Logger log;
 
     private NamedParameterJdbcTemplate template;
+    private final OrgDAOImpl orgDao = new OrgDAOImpl();
 
     @Override
     public void initialize() {
@@ -469,6 +472,50 @@ public class IncidentDAOImpl extends GenericDAO implements IncidentDAO {
     		return null;
     	}
 	}
+
+	 /** getIncidentsAndChildren - return all active incidents and there children
+   	 *  @return List<Incident> 
+   	 */
+    public List<Incident> getIncidentsTreeAccessibleByUser(int workspaceId, int accessibleByUserId) {
+
+    	// Getting orgid for this user
+        List<Org> orgList = orgDao.getUserOrgs(accessibleByUserId, workspaceId);
+
+        // if they somehow had no orgs, return en empty list
+        if(orgList == null || orgList.size() == 0)
+        {
+            log.info("No orgs for this user with id " + accessibleByUserId);
+            return null;
+        }
+
+        // Adding orgid as comma deliminated list
+        String orgIdList = "";
+
+        for(Org o: orgList)
+        {
+            orgIdList = o.getOrgId() + "," + orgIdList;
+        }
+
+        // Removing trailing comma
+        orgIdList = orgIdList.replaceAll(",$", "");
+
+        QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.INCIDENT_TABLE).selectAllFromTable()
+                .left().join(SADisplayConstants.INCIDENT_INCIDENTTYPE_TABLE).using(SADisplayConstants.INCIDENT_ID)
+                .left().join(SADisplayConstants.INCIDENT_TYPE_TABLE).using(SADisplayConstants.INCIDENT_TYPE_ID)
+                .join(SADisplayConstants.USER_SESSION_TABLE).using(SADisplayConstants.USERSESSION_ID)
+                .join(SADisplayConstants.USER_ORG_TABLE).using(SADisplayConstants.USER_ORG_ID)
+                .where().equals(SADisplayConstants.ACTIVE)
+                .and().equals(SADisplayConstants.WORKSPACE_ID)
+                .and().inAsSQL(SADisplayConstants.ORG_ID, orgIdList)
+                .and().isNull(SADisplayConstants.PARENT_INCIDENT_ID)
+                .orderBy(SADisplayConstants.CREATED,SADisplayConstants.INCIDENT_TABLE).desc();
+
+    	JoinRowCallbackHandler<Incident> handler = getIncidentHandlerWith(new Incident_IncidentTypeRowMapper().attachAdditionalMapper(new IncidentTypeRowMapper()));
+	    template.query(queryModel.toString(), 
+	         new MapSqlParameterSource(SADisplayConstants.ACTIVE, true)
+	    	 .addValue(SADisplayConstants.WORKSPACE_ID, workspaceId), handler);
+    	return getIncidentsTree( workspaceId, handler.getResults());
+    }
     
     /** getIncidentsAndChildren - return all active incidents and there children
    	 *  @return List<Incident> 
@@ -479,7 +526,8 @@ public class IncidentDAOImpl extends GenericDAO implements IncidentDAO {
     			.left().join(SADisplayConstants.INCIDENT_INCIDENTTYPE_TABLE).using(SADisplayConstants.INCIDENT_ID)
     			.left().join(SADisplayConstants.INCIDENT_TYPE_TABLE).using(SADisplayConstants.INCIDENT_TYPE_ID)
     			.where().equals(SADisplayConstants.ACTIVE)
-    			.and().equals(SADisplayConstants.WORKSPACE_ID).and().isNull(SADisplayConstants.PARENT_INCIDENT_ID)
+    			.and().equals(SADisplayConstants.WORKSPACE_ID)
+    			.and().isNull(SADisplayConstants.PARENT_INCIDENT_ID)
     			.orderBy(SADisplayConstants.CREATED).desc();
     	
     	JoinRowCallbackHandler<Incident> handler = getIncidentHandlerWith(new Incident_IncidentTypeRowMapper().attachAdditionalMapper(new IncidentTypeRowMapper()));
@@ -576,12 +624,54 @@ public class IncidentDAOImpl extends GenericDAO implements IncidentDAO {
 				.addValue(SADisplayConstants.WORKSPACE_ID, workspaceid));
     }
 	
-	public List<Incident> getIncidentsAccessibleByUser(int workspaceId, long accessibleByUserId) {
-		List<Incident> incidents = new ArrayList<Incident>();
-		
-		
-		
-		return incidents;
+	public List<Incident> getIncidentsAccessibleByUser(int workspaceId, int accessibleByUserId) {
+
+		// Getting orgid for this user
+		List<Org> orgList = orgDao.getUserOrgs(accessibleByUserId, workspaceId);
+
+		// if they somehow had no orgs, return en empty list
+		if(orgList == null || orgList.size() == 0)
+		{
+			log.info("No orgs for this user with id " + accessibleByUserId);
+			return null;
+		}
+
+		// Adding orgid as comma deliminated list
+		String orgIdList = "";
+
+		for(Org o: orgList)
+		{
+			orgIdList = o.getOrgId() + "," + orgIdList;
+		}
+
+		// Removing trailing comma
+		orgIdList = orgIdList.replaceAll(",$", "");
+
+
+	 	QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.INCIDENT_TABLE).selectAllFromTable()
+    			.left().join(SADisplayConstants.INCIDENT_INCIDENTTYPE_TABLE).using(SADisplayConstants.INCIDENT_ID)
+    			.left().join(SADisplayConstants.INCIDENT_TYPE_TABLE).using(SADisplayConstants.INCIDENT_TYPE_ID)
+    			.join(SADisplayConstants.USER_SESSION_TABLE).using(SADisplayConstants.USERSESSION_ID)
+    			.join(SADisplayConstants.USER_ORG_TABLE).using(SADisplayConstants.USER_ORG_ID)
+    			.where().equals(SADisplayConstants.ACTIVE)
+    			.and().equals(SADisplayConstants.WORKSPACE_ID)
+    			.and().inAsSQL(SADisplayConstants.ORG_ID, orgIdList)
+    			.orderBy(SADisplayConstants.CREATED,SADisplayConstants.INCIDENT_TABLE).desc();
+
+		try
+		{
+			JoinRowCallbackHandler<Incident> handler = getIncidentHandlerWith(new Incident_IncidentTypeRowMapper().attachAdditionalMapper(new IncidentTypeRowMapper()));
+		    template.query(queryModel.toString(), 
+		    	new MapSqlParameterSource(SADisplayConstants.ACTIVE, true)
+		    	.addValue(SADisplayConstants.WORKSPACE_ID, workspaceId), handler);
+
+	    	return handler.getResults();
+    	}
+    	catch(Exception e)
+    	{
+			log.error("Error retrieving incidents for this user: " + e.getMessage());
+			return null;
+		}
 	}
 	
 	public void updateIncidentFolder(List<String> incidentNames, String folder, int workspaceid){
@@ -593,6 +683,27 @@ public class IncidentDAOImpl extends GenericDAO implements IncidentDAO {
     	this.template.update(queryModel.toString(),  
     			new MapSqlParameterSource(SADisplayConstants.FOLDER, folder)
     			.addValue(SADisplayConstants.WORKSPACE_ID, workspaceid));
+	}
+
+	public int getOrgId(int incidentId)
+	{
+		QueryModel incidentQuery = QueryManager.createQuery(SADisplayConstants.INCIDENT_TABLE)
+				.selectFromTable(SADisplayConstants.ORG_ID)
+				.join(SADisplayConstants.USER_SESSION_TABLE).using(SADisplayConstants.USERSESSION_ID)
+                .join(SADisplayConstants.USER_ORG_TABLE).using(SADisplayConstants.USER_ORG_ID)
+                .where().equals(SADisplayConstants.INCIDENT_ID);
+
+        try
+        {
+	    	return this.template.queryForInt(incidentQuery.toString(),
+	    			new MapSqlParameterSource(SADisplayConstants.INCIDENT_ID, incidentId));
+    	}
+    	catch(Exception e)
+    	{
+    		log.info("Could not find org id for incident #0", incidentId);
+    	}
+    	return -1;
+
 	}
 	
 	public List<String> getChildIncidentNames(List<String> incidentNames, int workspaceid){

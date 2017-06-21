@@ -37,8 +37,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.SecondaryTable;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.annotations.Proxy;
 import org.json.JSONException;
@@ -50,6 +53,7 @@ import org.json.JSONObject;
 @Entity
 @Proxy(lazy=true)
 @Table(name = "userorg_workspace")
+@SecondaryTable(name = "userorg", pkJoinColumns=@PrimaryKeyJoinColumn(name="userorgid"))
 public class UserOrgWorkspace extends SADisplayMessageEntity implements SADisplayPersistedEntity {
 
 	private int userorgworkspaceid;
@@ -90,6 +94,13 @@ public class UserOrgWorkspace extends SADisplayMessageEntity implements SADispla
 	@Column(name = "userorgid", nullable = false)
 	public int getUserorgid(){
 		return this.userorgid;
+	}
+
+	@Column(table="userorg", name="systemroleid")
+	private int systemroleid;
+
+	public int getSystemRole(){
+		return this.systemroleid;
 	}
 	
 	public void setUserorgid(int userorgid){

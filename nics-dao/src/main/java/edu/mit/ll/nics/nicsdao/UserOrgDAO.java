@@ -53,4 +53,5 @@ public interface UserOrgDAO extends BaseDAO {
 	public List<SystemRole> getSystemRoles();
 	public List<Integer> getSuperUsers();
 	public int getSystemRoleIdForUserOrg(String username, int userOrgId);
+	public int getUserOrgByUserOrgWorkspace(int userorgWorkspaceId);
 }

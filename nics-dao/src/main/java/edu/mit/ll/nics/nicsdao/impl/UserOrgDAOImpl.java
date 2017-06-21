@@ -390,6 +390,30 @@ public class UserOrgDAOImpl extends GenericDAO implements UserOrgDAO {
     	return -1;
     
     }
+
+    public int getOrgIdForUserOrgWorkspace(int userOrgWorkspaceId)
+    {
+        int userorgid = getUserOrgByUserOrgWorkspace(userOrgWorkspaceId);
+        return getOrgId(userorgid);
+    }
+
+    public int getOrgId(int userOrgId)
+    {
+        QueryModel orgQueryModel = QueryManager.createQuery(SADisplayConstants.USER_ORG_TABLE)
+                .selectFromTable(SADisplayConstants.ORG_ID)
+                .where().equals(SADisplayConstants.USER_ORG_ID);
+
+        try
+        {
+            return template.queryForObject(orgQueryModel.toString(),
+                    new MapSqlParameterSource(SADisplayConstants.USER_ORG_ID, userOrgId), Integer.class);
+        }
+        catch(Exception e)
+        {
+            log.info("Could not retrieve org id for userorgid #0", userOrgId);
+        }
+        return -1;
+    }
     
     public int getSystemRoleIdForUserOrg(String username, int userOrgId){
     	//select systemroleid from userorg join "user" using(userid) where username=<username> and orgid=(select orgid from userorg where userorgid=<userorgid>)
@@ -439,4 +463,24 @@ public class UserOrgDAOImpl extends GenericDAO implements UserOrgDAO {
   private JoinRowCallbackHandler<SystemRole> getSystemRoleHandlerWith(JoinRowMapper... mappers) {
   	 return new JoinRowCallbackHandler(new SystemRoleRowMapper(), mappers);
   }
+
+  // Get user org from the userorgworkspaceid
+  public int getUserOrgByUserOrgWorkspace(int userorgWorkspaceId)
+  {
+        QueryModel orgQueryModel = QueryManager.createQuery(SADisplayConstants.USER_ORG_WORKSPACE_TABLE)
+                .selectFromTable(SADisplayConstants.USER_ORG_ID)
+                .join(SADisplayConstants.USER_ORG_TABLE)
+                .using(SADisplayConstants.USER_ORG_ID)
+                .where()
+                .equals(SADisplayConstants.USER_ORG_WORKSPACE_ID);
+        
+        try{
+            return template.queryForObject(orgQueryModel.toString(),
+                    new MapSqlParameterSource(SADisplayConstants.USER_ORG_WORKSPACE_ID, userorgWorkspaceId), Integer.class);
+        }catch(Exception e){
+            log.info("Could not retrieve userorgid for userOrgWorkspaceId #0", userorgWorkspaceId);
+        }
+        return -1;
+  }
+
 }

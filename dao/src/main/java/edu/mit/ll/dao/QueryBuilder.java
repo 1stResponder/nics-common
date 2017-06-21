@@ -75,6 +75,7 @@ public final class QueryBuilder{
 	public static String MAX = " max";
 	
 	public static String COLON = ":";
+	public static String PERIOD = ".";
 	public static String EQUALS = "=";
 	public static String COMMA = ",";
 	public static String SPACE = " ";
@@ -157,6 +158,10 @@ public final class QueryBuilder{
 	
 	public static String orderBy(String field){
 		return ORDER_BY + field;
+	}
+
+	public static String orderBy(String field, String table){
+		return ORDER_BY + table + PERIOD + field;
 	}
 	
 	public static String isNull(String field){

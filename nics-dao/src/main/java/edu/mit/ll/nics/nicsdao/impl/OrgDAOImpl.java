@@ -166,14 +166,24 @@ public class OrgDAOImpl extends GenericDAO implements OrgDAO {
     			.where().equals(SADisplayConstants.USER_ID)
     			.and().equals(SADisplayConstants.USER_ORG_WORKSPACE_ENABLED)
     			.and().equals(SADisplayConstants.WORKSPACE_ID).orderBy(SADisplayConstants.ORG_NAME);
-    	
-    	JoinRowCallbackHandler<Org> handler = getHandlerWith(new UserOrgRowMapper());
-        template.query(queryModel.toString(), 
-            new MapSqlParameterSource(SADisplayConstants.USER_ID, userid)
-        	.addValue(SADisplayConstants.USER_ORG_WORKSPACE_ENABLED, true)
-        	.addValue(SADisplayConstants.WORKSPACE_ID, workspaceId), 
-            handler);
-        return handler.getResults();
+    	try
+        {
+    	   JoinRowCallbackHandler<Org> handler = getHandlerWith(new UserOrgRowMapper());
+            template.query(
+                queryModel.toString(), 
+                new MapSqlParameterSource(SADisplayConstants.USER_ID, userid)
+        	   .addValue(SADisplayConstants.USER_ORG_WORKSPACE_ENABLED, true)
+        	   .addValue(SADisplayConstants.WORKSPACE_ID, workspaceId), 
+                handler
+            );
+
+            return handler.getResults();
+        }
+        catch(Exception e)
+        {
+            log.error("Error retrieving orgs for this user: " + e.getMessage());
+            return null;
+        }
     }
     
     /** getUserOrgs
@@ -226,7 +236,7 @@ public class OrgDAOImpl extends GenericDAO implements OrgDAO {
     			.addValue(SADisplayConstants.ENABLED, true)
     			.addValue(SADisplayConstants.WORKSPACE_ID, workspaceId));
     }
-    
+
     public List<Org> getUserOrgsByUsername(String username, int workspaceId){
     	QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.ORG_TABLE)
     			.selectAllFromTable()

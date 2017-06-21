@@ -94,7 +94,6 @@ public final class SADisplayConstants {
 	public static final String USER_ORG_WORKSPACE_TABLE = "userorg_workspace";
     public static final String UXOREPORT_TABLE = "Uxoreport";
 	public static final String DATALAYER_ORG_TABLE = "datalayer_org";
-	
 	public static final String GRAPHIC_URL = "graphicurl";
 
 	//COMMON COLUMN NAMES
@@ -204,6 +203,7 @@ public final class SADisplayConstants {
 	public static final String DATASOURCE_TYPE_ID = "datasourcetypeid";
 	public static final String INCIDENT_TYPE_ID = "incidenttypeid";
 	public static final String USER_ESCAPED = "\"user\"";
+	public static final String DELETED_FEATURE_ID = "deletedfeatureid";
 	public static final String FEATURE_ID = "featureId";
 	public static final String USER_ORG_ORG_ID = "userorg.orgid";
 	public static final String ID = "id";
@@ -279,6 +279,7 @@ public final class SADisplayConstants {
 	public static final String USER_SEQUENCE_TABLE = "user_seq";
 	public static final String CONTACT_SEQUENCE_TABLE = "contact_seq";
 	public static final String USER_ORG_SEQUENCE_TABLE = "user_org_seq";
+	public static final String FEATURE_SEQUENCE_TABLE = "feature_featureid_seq";
 	public static final String COLLABROOM_FEATURE_TABLE = "collabroomfeature";
 	public static final String COLLAB_ROOM_FEATURE_ID = "collabroomfeatureid";
 	public static final String USER_FEATURE_TABLE = "userfeature";
@@ -381,4 +382,35 @@ public final class SADisplayConstants {
 	public static final String IMAGE_FEATURE_TABLE = "imagefeature";
 	public static final String LOCATION = "location";
 	public static final String IMAGE_ID = "imageid";
+
+	// Feature
+	public static final String ALL_FEATURES = "all";
+	public static final String POINT = "point";
+	public static final String LINE = "line";
+	public static final String POLYGON = "polygon";
+	public static final String SHAPE = "shape";
+	public static final String GEOMETRY_ATT_NAME = "geometry";
+	public static final String GEOMETRY_TYPE = "Geometry";
+
+	// Exports
+	public static final String EXPORT_ERROR_FILENAME = "Export_Error";
+	public static final String EXPORT_TYPE_ERROR = "There was an error retrieving an export file for format ";
+	public static final String EXPORT_PERMISSION_ERROR = "You do not have permissions to download this file.";
+	public static final String EXPORT_ERROR = "There was an error processing your request.";
+	public static final String EXPORT_INFO_ERROR = "There was an error gathering information for ";
+	public static final String EXPORT_INVALID_TYPE_ERROR = "An invalid geometry type was provided.";
+
+	public static final int EXPORT_SRID = 3857;
+	public static final String EXPORT_SRS_STRING = "EPSG:3857";
+	public static final String EXPORT_STYLE="collabRoomStyle";
+	public static final String EXPORT_REST_URL = "/rest";
+
+	// KML Export
+	public static final String DYNAMIC = "dynamic";
+	public static final String STATIC = "static";
+
+	// WMS/WFS Export
+	public static final String WMS = "wms";
+	public static final String WFS = "wfs";
+	public static final String NS = "ns";
 }

@@ -123,6 +123,24 @@ public class UserSessionDAOImpl extends GenericDAO implements UserSessionDAO {
 		}
 		return usersessionid.intValue();
 	}
+
+    public int getUserOrgForSession(int usersessionid)
+    {
+        QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.USERSESSION_TABLE)
+                .selectFromTable(SADisplayConstants.USER_ORG_ID)
+                .where().equals(SADisplayConstants.USERSESSION_ID);
+        try
+        {
+            return this.template.queryForObject(queryModel.toString(),
+                    new MapSqlParameterSource(SADisplayConstants.USERSESSION_ID, usersessionid), Integer.class);
+        }
+        catch(Exception e)
+        {
+            log.info("Could not get userorgid for usersessionid: " + usersessionid);
+        }
+
+        return -1;
+    }
     
     public boolean removeCurrentUserSession(int userid){
     	QueryModel queryModel = QueryManager.createQuery(SADisplayConstants.CURRENT_USERSESSION_TABLE)

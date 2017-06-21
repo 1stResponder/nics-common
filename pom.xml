@@ -52,6 +52,7 @@
 
 	<!-- Listing all the sub-components of the NICS codebase -->
 	<modules>
+		<module>nics-constants</module>
 		<module>dao</module>
 		<module>xml-email</module>
 		<module>email-alert</module>
@@ -64,7 +65,6 @@
 		<module>rabbitmq-admin-interface</module>
 		<module>rabbitmq-client</module>
 		<module>web-service-request</module>
-		<module>nics-constants</module>
 		<module>nics-dao</module>
 	</modules>
 

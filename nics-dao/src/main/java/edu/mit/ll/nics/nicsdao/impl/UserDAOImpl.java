@@ -145,14 +145,6 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		
 		return userid;
     }
-
-    public int create(String firstname, String lastname, String username, String password, String rawPassword){
-    
-      int userid = create(firstname, lastname, username, password);
-
-      return userid;
-    }
-    
     
 
     /**
@@ -202,6 +194,7 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
     		return false;
     	}
     	
+    	
     	return true;
     }
 
@@ -209,7 +202,9 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
       
       boolean isSuccess = false;
 
-      try{
+      try
+      {
+
         isSuccess = updateUserPW(userId,passwordHash);
       }
       catch(Exception e){
@@ -219,7 +214,7 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
       
       return isSuccess;
     }
-   
+    
     /**
      * 
      * TODO: This is taken from JBoss' PasswordHash class, which itself is deprecated. But we need
@@ -398,12 +393,15 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 			queryModel = queryModel.ilike(SADisplayConstants.FIRSTNAME).value("'%" + firstName + "%'")
 					.and().ilike(SADisplayConstants.LASTNAME).value("'%" + lastName + "%'");
 		}
+
+    queryModel = queryModel.and().equals(SADisplayConstants.ACTIVE);
 		
 		JoinRowCallbackHandler<User> handler = getHandlerWith();
         
-		this.template.query(queryModel.toString(), 
+		this.template.query(queryModel.toString(),
             new MapSqlParameterSource(SADisplayConstants.FIRSTNAME, firstName)
-			.addValue(SADisplayConstants.LASTNAME, lastName), 
+			       .addValue(SADisplayConstants.LASTNAME, lastName)
+             .addValue(SADisplayConstants.ACTIVE, true),
             handler);
         
         try{
@@ -435,11 +433,13 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		}else{
 			queryModel = queryModel.ilike(field).value("'%" + value + "%'");
 		}
+
+    queryModel = queryModel.and().equals(SADisplayConstants.ACTIVE);
 		
 		JoinRowCallbackHandler<User> handler = getHandlerWith();
         
 		this.template.query(queryModel.toString(), 
-            new MapSqlParameterSource(field, value), 
+            new MapSqlParameterSource(field, value).addValue(SADisplayConstants.ACTIVE, true), 
             handler);
         
         try{
@@ -1099,6 +1099,7 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 		 * - create() returns the userid you sent it, make sure to check what happens in a failure
 		*/
 
+// Only for testing,  REMOVE BEFORE PUSH
 		int userId = create(user.getFirstname(), user.getLastname(), user.getUsername(), user.getPasswordHash());
 		
 		// TODO: better way to do batch update, rather than loop through all this?

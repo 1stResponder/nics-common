@@ -470,6 +470,11 @@ public class QueryModel{
 		query.append(QueryBuilder.orderBy(value));
 		return this;
 	}
+
+	public QueryModel orderBy(String value, String table){
+		query.append(QueryBuilder.orderBy(value, table));
+		return this;
+	}
 	
 	public QueryModel isNull(String field){
 		query.append(QueryBuilder.isNull(field));
